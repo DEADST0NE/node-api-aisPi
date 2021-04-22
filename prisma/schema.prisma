@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model d_plan {
+  id                  String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  year_start          Int
+  year_stop           Int
+  date_create         DateTime        @db.Date
+  date_sent           DateTime        @db.Date
+  date_register       DateTime        @db.Date
+  commentt            String?         @db.VarChar(500)
+  s_plan_type_id      Int
+  s_status_id_current Int
+  number              Int             @default(autoincrement())
+  name                String          @db.VarChar(255)
+  s_organizarion_id   String          @db.Uuid
+  code_okei           Int             @default(0)
+  is_remove           Boolean?        @default(false)
+  s_organization      s_organization  @relation(fields: [s_organizarion_id], references: [id])
+  s_plan_type         s_plan_type     @relation(fields: [s_plan_type_id], references: [id])
+  s_status            s_status        @relation(fields: [s_status_id_current], references: [id])
+  d_plan_object       d_plan_object[]
+  d_plan_status       d_plan_status[]
+
+  @@index([s_plan_type_id], name: "d_plan_s_plan_type_id_idx")
+}
+
+model d_plan_object {
+  id                    String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  d_plan_id             String                  @db.Uuid
+  object_name           String                  @db.VarChar(255)
+  object_number         Int                     @default(autoincrement())
+  plan_year_budget1     Decimal                 @default(0) @db.Decimal(15, 2)
+  plan_year_budget2     Decimal                 @default(0) @db.Decimal(15, 2)
+  indicator_name        String?                 @db.VarChar(255)
+  unit_name             String?                 @default("тыс. рублей") @db.VarChar(255)
+  bases_value           String?                 @db.VarChar(255)
+  financial_year_budget Decimal                 @db.Decimal(15, 2)
+  financial_year_plan   Decimal?                @db.Decimal(15, 2)
+  financial_year_plan1  Decimal?                @db.Decimal(15, 2)
+  financial_year_plan2  Decimal?                @db.Decimal(15, 2)
+  kbk                   String?                 @db.VarChar(30)
+  object_value          String?                 @db.VarChar(1000)
+  plan_year_budget      Decimal                 @default(0) @db.Decimal(15, 2)
+  object_type_id        Int?
+  d_plan                d_plan                  @relation(fields: [d_plan_id], references: [id])
+  s_parametr_type       s_parametr_type?        @relation(fields: [object_type_id], references: [id])
+  d_plan_object_section d_plan_object_section[]
+
+  @@index([d_plan_id], name: "d_plan_object_d_plan_id_idx")
+}
+
+model d_plan_object_section {
+  id                             String                           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  d_plan_object_id               String                           @db.Uuid
+  s_section_id                   Int
+  d_plan_object                  d_plan_object                    @relation(fields: [d_plan_object_id], references: [id])
+  s_section                      s_section                        @relation(fields: [s_section_id], references: [id])
+  d_plan_object_section_parametr d_plan_object_section_parametr[]
+
+  @@index([d_plan_object_id], name: "d_plan_object_section_d_plan_object_id_idx")
+  @@index([s_section_id], name: "d_plan_object_section_s_section_id_idx")
+}
+
+model d_plan_object_section_parametr {
+  id                                    String                                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  d_plan_object_section_id              String                                  @db.Uuid
+  s_section_parametr_id                 Int
+  date_add                              DateTime                                @default(now()) @db.Timestamp(6)
+  value                                 String?                                 @db.VarChar(255)
+  d_plan_object_section                 d_plan_object_section                   @relation(fields: [d_plan_object_section_id], references: [id])
+  s_section_parametr                    s_section_parametr                      @relation(fields: [s_section_parametr_id], references: [id])
+  d_plan_object_section_parametr_status d_plan_object_section_parametr_status[]
+
+  @@index([d_plan_object_section_id], name: "d_plan_object_section_parametr_d_plan_object_section_id_idx")
+  @@index([s_section_parametr_id], name: "d_plan_object_section_parametr_s_section_parametr_id_idx")
+}
+
+model d_plan_object_section_parametr_status {
+  id                                String                         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  d_plan_object_section_parametr_id String                         @db.Uuid
+  s_status_id                       Int
+  date_add                          DateTime                       @default(now()) @db.Timestamp(6)
+  commentt                          String?                        @db.VarChar(500)
+  d_plan_object_section_parametr    d_plan_object_section_parametr @relation(fields: [d_plan_object_section_parametr_id], references: [id])
+  s_status                          s_status                       @relation(fields: [s_status_id], references: [id])
+
+  @@index([d_plan_object_section_parametr_id], name: "d_plan_object_section_paramet_d_plan_object_section_paramet_idx")
+  @@index([s_status_id], name: "d_plan_object_section_parametr_status_s_status_id_idx")
+}
+
+model d_plan_status {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  d_plan_id   String   @db.Uuid
+  s_status_id Int
+  date_add    DateTime @default(now()) @db.Timestamp(6)
+  commentt    String?  @db.VarChar(500)
+  d_plan      d_plan   @relation(fields: [d_plan_id], references: [id])
+  s_status    s_status @relation(fields: [s_status_id], references: [id])
+
+  @@index([d_plan_id], name: "d_plan_status_d_plan_id_idx")
+}
+
+model s_accounts {
+  id            String     @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  login         String     @unique @db.VarChar(70)
+  password      String     @db.VarChar(500)
+  s_employee_id String     @unique @db.Uuid
+  s_employee    s_employee @relation(fields: [s_employee_id], references: [id])
+}
+
+model s_employee {
+  id                String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  s_organization_id String         @db.Uuid
+  employee_name     String         @db.VarChar(255)
+  phone_number      String?        @db.VarChar
+  s_role_id         Int
+  s_organization    s_organization @relation(fields: [s_organization_id], references: [id])
+  s_role            s_role         @relation(fields: [s_role_id], references: [id])
+  s_accounts        s_accounts?
+
+  @@index([s_organization_id], name: "s_employee_s_organization_id_idx")
+}
+
+model s_organization {
+  id                String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organization_name String       @db.VarChar(255)
+  d_plan            d_plan[]
+  s_employee        s_employee[]
+}
+
+model s_plan_type {
+  id        Int      @id @default(autoincrement())
+  type_name String   @db.VarChar(255)
+  d_plan    d_plan[]
+}
+
+model s_section {
+  id                    Int                     @id @default(autoincrement())
+  section_name          String                  @db.VarChar(255)
+  d_plan_object_section d_plan_object_section[]
+  s_section_parametr    s_section_parametr[]
+}
+
+model s_section_parametr {
+  id                             Int                              @id @default(autoincrement())
+  s_section_id                   Int
+  parametr_name                  String                           @db.VarChar(255)
+  s_section                      s_section                        @relation(fields: [s_section_id], references: [id])
+  d_plan_object_section_parametr d_plan_object_section_parametr[]
+
+  @@index([s_section_id], name: "s_section_parametr_s_section_id_idx")
+}
+
+model s_status {
+  id                                    Int                                     @id @default(autoincrement())
+  status_name                           String                                  @db.VarChar(255)
+  d_plan                                d_plan[]
+  d_plan_object_section_parametr_status d_plan_object_section_parametr_status[]
+  d_plan_status                         d_plan_status[]
+}
+
+model s_role {
+  id         Int          @id @default(autoincrement())
+  role_name  String       @db.VarChar(255)
+  s_employee s_employee[]
+}
+
+model s_parametr_type {
+  id            Int             @id @default(autoincrement())
+  parametr_name String          @db.VarChar(255)
+  d_plan_object d_plan_object[]
+}
