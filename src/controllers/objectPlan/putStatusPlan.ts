@@ -50,7 +50,7 @@ const putStatusPlan = (req: Request, res: Response) => {
             }
           },
           date_add: new Date(),
-        }
+        },
       }).then(() => {
         const requsetData = {
           id: data.id,
@@ -58,10 +58,14 @@ const putStatusPlan = (req: Request, res: Response) => {
           organizationName: data?.s_organization.organization_name,
           dateCreate: moment(data?.date_create).format('DD.MM.YYYY'), 
           planType: data?.s_plan_type.type_name,
-          status: data?.s_status_id_current,
+          status: {
+            id: data?.s_status_id_current,
+            comment: comment || ''
+          },
           number: data?.number,
           name: data?.name
         };
+        console.log(requsetData);
         return res.status(200).json(requsetData);
       }).catch((err) => {
         res.status(500).send({ message: err.message || "Error" });

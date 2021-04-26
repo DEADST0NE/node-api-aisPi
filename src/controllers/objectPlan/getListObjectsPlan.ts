@@ -25,19 +25,27 @@ const geListObjectsPlan = (req: Request, res: Response) => {
           in: Number(filterType)
         } : undefined,
       },
+      orderBy: [
+        {
+          object_type_id: 'asc',
+        },{
+          object_number: 'asc',
+        },
+      ],
       include: {
         s_parametr_type: true,
       }
     }).then((data) => { 
+      console.log(data);
       const requestData = data.map(item => ({
         id: item.id,
-        name: item.object_name,
+        objectName: item.object_name,
         number: item.object_number,
         type: {
           id: item.s_parametr_type?.id,
           name: item.s_parametr_type?.parametr_name,
         },
-        planYearBudget0: item.plan_year_budget,
+        planYearBudget: item.plan_year_budget,
         planYearBudget1: item.plan_year_budget1,
         planYearBudget2: item.plan_year_budget2,
         indicatorName: item.indicator_name,
@@ -49,7 +57,7 @@ const geListObjectsPlan = (req: Request, res: Response) => {
         financialYearPlan2: item.financial_year_plan2,
         kbk: item.kbk,
         objectValue: item.object_value,
-      }));;
+      }));
       return res.status(200).json(requestData);
     }).catch((err) => {
         res.status(500).send({ message: err.message || "Error" });

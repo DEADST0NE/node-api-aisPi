@@ -3,7 +3,12 @@ import prisma from '../../../prisma'
 import moment from 'moment'
 
 const getPlan = (req: Request, res: Response) => { 
-  prisma.d_plan.findMany().then((data) => {
+  prisma.d_plan.findMany({
+    select: {
+      is_remove: false,
+      s_status_id_current: true,
+    }
+  }).then((data) => {
     const requsetData = {
       count: data.length,
       completed: data.reduce((a, item) => (a= a + item.s_status_id_current === 2 ? 1 : 0), 0),

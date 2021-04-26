@@ -22,6 +22,12 @@ const getDitailObjectPlan = (req: Request, res: Response) => {
         },
         d_plan_object: {
           select: {
+            indicator_name: true,
+            unit_name: true,
+            bases_value: true,
+            financial_year_budget: true,
+            financial_year_plan1: true,
+            financial_year_plan2: true,
             plan_year_budget: true,
             plan_year_budget1: true,
             plan_year_budget2: true,
@@ -38,7 +44,7 @@ const getDitailObjectPlan = (req: Request, res: Response) => {
             s_section_parametr_id: 'asc'
           },
           select: {
-            id: true,
+            id: true, 
             date_add: true,
             value: true,
             d_plan_object_section_parametr_status: {
@@ -65,6 +71,12 @@ const getDitailObjectPlan = (req: Request, res: Response) => {
         planYearBudget1: data[0]?.d_plan_object.plan_year_budget1,
         planYearBudget2: data[0]?.d_plan_object.plan_year_budget2,
         objectValue: data[0]?.d_plan_object.object_value,
+        indicatorName: data[0].d_plan_object.indicator_name,
+        unitName: data[0].d_plan_object.unit_name,
+        basesValue: data[0].d_plan_object.bases_value,
+        financialYearBudget: data[0].d_plan_object.financial_year_budget,
+        financialYearPlan1: data[0].d_plan_object.financial_year_plan1,
+        financialYearPlan2: data[0].d_plan_object.financial_year_plan2,
         date: moment(data[0]?.d_plan_object.d_plan.date_register).format('DD.MM.YYYY'),
         section: data?.map(item => ({
           id: item.id,

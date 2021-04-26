@@ -33,7 +33,10 @@ const getPlan = (req: Request, res: Response) => {
         organizationName: data?.s_organization.organization_name,
         dateCreate: moment(data?.date_create).format('DD.MM.YYYY'), 
         planType: data?.s_plan_type.type_name,
-        status: data?.d_plan_status[0].s_status_id,
+        status: {
+          id: data?.d_plan_status[0].s_status_id,
+          comment: data?.d_plan_status[0].commentt
+        },
         number: data?.number,
         name: data?.name
       };
